@@ -113,12 +113,86 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(side);
+        for (int col = 0; col < board.size(); col++) {
+            if (tiltColumn(col) && !changed) {
+                changed = true;
+            }
+        }
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        board.setViewingPerspective(Side.NORTH);
         return changed;
+    }
+
+    private boolean tiltColumn(int col) {
+        boolean moved = false;
+        boolean[] rowsMerged = {false, false, false, false};
+        //Look through tiles going down, starting from second tile
+        for (int row = board.size() - 2; row >= 0; row--) {
+            //current tile
+            Tile current = board.tile(col, row);
+            //ignore empty tiles, find the first filled tile
+            if (board.tile(col, row) != null) {
+                int currRow = row + 1;
+                Tile comparison = board.tile(col, currRow);
+                //after finding filled tile, go back up through each tile to check for empty tile
+                //if tile empty, go up next
+                while (comparison == null) {
+                    if (currRow <= board.size() - 2) {
+                        currRow++;
+                        comparison = board.tile(col, currRow);
+                    } else {
+                        break;
+                    }
+                }
+                //if comparison is null, this means all tiles above are empty, so move to top
+                if (comparison == null) {
+                    board.move(col, currRow, current);
+                    moved = true;
+                } else {
+                //if found filled tile, check if value is the same as current tile
+                    //if same value, and tile hasn't already been merged this turn, merge tiles
+                    if (comparison.value() == current.value() && !rowsMerged[currRow]) {
+                        board.move(col, currRow, current);
+                        moved = true;
+                        rowsMerged[currRow] = true;
+                        score += current.value() * 2;
+                    } else {
+                        //if merge isn't possible, move to the next tile down
+                        if (currRow - 1 == row) {
+                            continue;
+                        }
+                        board.move(col, currRow - 1, current);
+                        moved = true;
+                    }
+                }
+            }
+        }
+        return moved;
+    }
+
+    private Tile matchingTile(int col, int row) {
+        int value = board.tile(col, row).value();
+        for (int i = board.size() - 1; i > row; i--) {
+            if (board.tile(col, row).value() == value) {
+                return board.tile(col, row);
+            }
+        }
+        return null;
+    }
+
+    private Tile nextEmptyTile(int col, int row) {
+        for (int i = board.size() - 1; i > row; i--) {
+            Tile tile = (board.tile(col, i));
+            if (tile == null) {
+                return tile;
+            }
+        }
+        return board.tile(col, row);
     }
 
     /** Checks if the game is over and sets the gameOver variable
