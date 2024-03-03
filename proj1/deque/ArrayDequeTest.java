@@ -1,7 +1,10 @@
 package deque;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
+import java.util.Comparator;
 
 
 public class ArrayDequeTest {
@@ -75,8 +78,8 @@ public class ArrayDequeTest {
     /* Check if you can create LinkedListDeques with different parameterized types*/
     public void multipleParamTest() {
 
-        ArrayDeque<String>  lld1 = new ArrayDeque<String>();
-        ArrayDeque<Double>  lld2 = new ArrayDeque<Double>();
+        ArrayDeque<String> lld1 = new ArrayDeque<String>();
+        ArrayDeque<Double> lld2 = new ArrayDeque<Double>();
         ArrayDeque<Boolean> lld3 = new ArrayDeque<Boolean>();
 
         lld1.addFirst("string");
@@ -133,4 +136,33 @@ public class ArrayDequeTest {
         //assertEquals("Should return item at index 3", "Three", lld1.getRecursive(3));
     }
 
+    @Test
+    /* Iterator and Equals Test */
+    public void iteratorTest() {
+        ArrayDeque<String> lld1 = new ArrayDeque<>();
+        lld1.addLast("Zero");
+        lld1.addLast("One");
+        lld1.addLast("Two");
+        lld1.addLast("Three");
+        lld1.addLast("Four");
+
+        for (String s : lld1) {
+            System.out.println(s);
+        }
+    }
+
+    @Test
+    /* Iterator and Equals Test */
+    public void comparatorTest() {
+        MaxArrayDeque<Integer> lld1 = new MaxArrayDeque<>(Comparator.<Integer>naturalOrder());
+        lld1.addLast(1);
+        lld1.addLast(2);
+        lld1.addLast(4);
+        lld1.addLast(645);
+        lld1.addLast(314);
+
+        System.out.println(lld1.max());
+    }
 }
+
+

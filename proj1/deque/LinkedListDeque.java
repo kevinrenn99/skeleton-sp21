@@ -1,6 +1,9 @@
 package deque;
+import afu.org.checkerframework.checker.oigj.qual.O;
 
-public class LinkedListDeque<T> {
+import java.util.Iterator;
+
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     public class Node<T> {
         private T item;
         private Node<T> next;
@@ -24,26 +27,26 @@ public class LinkedListDeque<T> {
         size = 0;
     }
 
+    @Override
     public void addFirst(T item) {
         firstSentinel.next = new Node<>(item, firstSentinel.next, firstSentinel);
         firstSentinel.next.next.previous = firstSentinel.next;
         size++;
     }
 
+    @Override
     public void addLast(T item) {
         lastSentinel.previous = new Node<>(item, lastSentinel, lastSentinel.previous);
         lastSentinel.previous.previous.next = lastSentinel.previous;
         size++;
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void printDeque() {
         Node<T> n = firstSentinel;
         if (isEmpty()) {
@@ -56,6 +59,7 @@ public class LinkedListDeque<T> {
         System.out.println("");
     }
 
+    @Override
     public T removeFirst() {
         if (isEmpty()) {
             return null;
@@ -67,6 +71,7 @@ public class LinkedListDeque<T> {
         return item;
     }
 
+    @Override
     public T removeLast() {
         if (isEmpty()) {
             return null;
@@ -78,6 +83,7 @@ public class LinkedListDeque<T> {
         return item;
     }
 
+    @Override
     public T get(int index) {
         if (index >= size) {
             return null;
@@ -103,4 +109,43 @@ public class LinkedListDeque<T> {
         return getRecursiveHelper(index - 1, node.next);
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new LLIterator();
+    }
+
+    private class LLIterator implements Iterator<T> {
+        private Node<T> current;
+        public LLIterator() {
+            current = firstSentinel.next;
+        }
+
+        public boolean hasNext() {
+            return current.item != null;
+        }
+
+        public T next() {
+            T returnItem = current.item;
+            current = current.next;
+            return returnItem;
+        }
+    }
+    /*
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof LinkedListDeque other) {
+            if (this.size() != other.size()) {
+                return false;
+            }
+            Iterator<T> currentIterator = this.iterator();
+            Iterator<T> otherIterator = other.iterator();
+            while (currentIterator.hasNext() && otherIterator.hasNext()) {
+                if (currentIterator.next() != otherIterator.next()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }*/
 }

@@ -133,4 +133,19 @@ public class LinkedListDequeTest {
         assertEquals("Should return item at index 3", "Three", lld1.get(3));
         assertEquals("Should return item at index 3", "Three", lld1.getRecursive(3));
     }
+
+    @Test
+    /* Iterator and Equals Test */
+    public void iteratorTest() {
+        LinkedListDeque<String> lld1 = new LinkedListDeque<>();
+        lld1.addLast("Zero");
+        lld1.addLast("One");
+        lld1.addLast("Two");
+        lld1.addLast("Three");
+        lld1.addLast("Four");
+
+        for (String s : lld1) {
+            System.out.println(s);
+        }
+    }
 }
