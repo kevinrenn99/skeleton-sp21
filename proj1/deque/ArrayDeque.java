@@ -23,6 +23,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
         if (array[front] == null) {
             array[front] = item;
+            last = front;
             size++;
             return;
         }
@@ -49,6 +50,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
         if (array[last] == null) {
             array[last] = item;
+            front = last;
             size++;
             return;
         }

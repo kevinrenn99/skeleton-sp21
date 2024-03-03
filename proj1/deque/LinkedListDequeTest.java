@@ -1,8 +1,8 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
 
 /** Performs some basic linked list tests. */
 public class LinkedListDequeTest {
@@ -148,4 +148,64 @@ public class LinkedListDequeTest {
             System.out.println(s);
         }
     }
+
+    @Test
+    public void randomizedTest() {
+        ArrayDeque<Integer> L = new ArrayDeque<>();
+        java.util.ArrayDeque<Integer> correct = new java.util.ArrayDeque<>();
+        int N = 5000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 5);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                L.addLast(randVal);
+                correct.addLast(randVal);
+            } else if (operationNumber == 1) {
+                // size
+                int size = L.size();
+                int buggySize = correct.size();
+                assertEquals(size, buggySize);
+            } else if (operationNumber == 2) {
+                if (L.isEmpty()) {
+                    continue;
+                }
+                int remove = L.removeLast();
+                int buggyRemove = correct.removeLast();
+                assertEquals(remove, buggyRemove);
+            } else if (operationNumber == 3) {
+                int randVal = StdRandom.uniform(0, 100);
+                L.addFirst(randVal);
+                correct.addFirst(randVal);
+            } else if (operationNumber == 4) {
+                if (L.isEmpty()) {
+                    continue;
+                }
+                int remove = L.removeFirst();
+                int buggyRemove = correct.removeFirst();
+                assertEquals(remove, buggyRemove);
+            }
+        }
+    }
+
+    @Test
+    public void autograder() {
+        ArrayDeque<Integer> L = new ArrayDeque<>();
+        L.addLast(0);
+        L.removeFirst();
+        L.addFirst(2);
+        L.get(0);
+        L.get(0);
+        L.addLast(5);
+        L.removeFirst();
+        L.removeLast();
+        L.addFirst(8);
+        L.addLast(9);
+        L.addLast(10);
+        L.addFirst(11);
+        L.addFirst(12);
+        L.removeLast();
+    }
+
+
 }
