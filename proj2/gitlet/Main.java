@@ -32,7 +32,22 @@ public class Main {
                 }
                 Repository.add(args[1]);
                 break;
-            // TODO: FILL THE REST IN
+            case "commit":
+                // TODO: handle the `add [filename]` command
+                if (args.length != 1) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.commit();
+                break;
+            case "rm":
+                // TODO: handle the `add [filename]` command
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.remove(args[1]);
+                break;
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);

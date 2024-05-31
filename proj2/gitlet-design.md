@@ -10,12 +10,14 @@
 
 1. String message
 2. Date timestamp
-3. reference to parent
-4. references to blobs
+3. Reference to parent
+4. References to blobs
 
 #### Methods
 
-1. 
+1. Default Constructor: for initial Commit
+2. Constructor for general Commit
+3. 
 
 ### Repository
 
@@ -27,6 +29,17 @@
 
 1. void init()
 2. 
+
+### Blob
+
+#### Instance Variables
+
+1. String message
+
+#### Methods
+
+1.
+
 
 ## Algorithms
 

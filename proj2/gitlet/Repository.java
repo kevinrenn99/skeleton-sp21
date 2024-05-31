@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,16 +32,14 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     /** Commit directory */
     public static final File COMMITS_DIR = join(GITLET_DIR, "commits");
-    /** Blobs directory */
-    public static final File BLOBS_DIR = join(GITLET_DIR, "blobs");
+    /** Objects directory */
+    public static final File OBJECTS_DIR = join(GITLET_DIR, "objects");
     /** Staging directory */
     public static final File STAGING_DIR = join(GITLET_DIR, "staging");
-    /** Staged Blobs*/
-    public static final File STAGED_BLOBS = join(STAGING_DIR, "blobs");
     /** Current Head*/
     public static final File HEAD = join(GITLET_DIR, "HEAD");
-    /** Blob Map*/
-    private static HashMap<String, String> blobMap = new HashMap<>();
+
+    private static StagingArea staging = new StagingArea();
 
 
 
@@ -57,33 +56,46 @@ public class Repository {
         }
         GITLET_DIR.mkdir();
         COMMITS_DIR.mkdir();
-        BLOBS_DIR.mkdir();
-        writeObject(join(BLOBS_DIR, "blobMap"), blobMap);
+        OBJECTS_DIR.mkdir();
         STAGING_DIR.mkdir();
-        STAGED_BLOBS.mkdir();
-        HEAD.mkdir();
+        try {
+            HEAD.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Commit initialCommit = new Commit();
         String hash = sha1(serialize(initialCommit));
         File initialCommitFile = join(COMMITS_DIR, hash);
         writeObject(initialCommitFile, initialCommit);
-        File headFile = join(HEAD, hash);
-        writeObject(headFile, initialCommit);
+        writeContents(HEAD, hash);
+        staging.createFile();
     }
 
     public static void add(String fileName) {
-        File blob = join(CWD, fileName);
-        if (!blob.exists()) {
+        File file = join(CWD, fileName);
+        if (!file.exists()) {
             System.out.println("File does not exist.");
             return;
         }
-        String hash = sha1(serialize(blob));
-        Commit head = readObject(new File(Utils.plainFilenamesIn(HEAD).getFirst()), Commit.class);
-        if (head.getBlobs().contains(hash)) {
-            return;
-        }
-        File blobHash = join(STAGED_BLOBS, hash);
-        blobHash.mkdir();
-        writeContents(join(blobHash, fileName), readContents(blob));
+        Blob blob = new Blob(file);
+        blob.saveBlob();
+        staging.add(file, blob.getHash());
+        staging.printAdded();
+    }
+
+    public static void commit() {
 
     }
+
+    public static void remove(String fileName) {
+        File file = join(CWD, fileName);
+        staging.remove(file);
+    }
+
+    public static Commit getHead() {
+        String headHash = readContentsAsString(HEAD);
+        return readObject(join(COMMITS_DIR, headHash), Commit.class);
+    }
+
 }
