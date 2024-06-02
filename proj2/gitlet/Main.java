@@ -41,7 +41,6 @@ public class Main {
                 Repository.commit(args[1]);
                 break;
             case "rm":
-                // TODO: handle the `add [filename]` command
                 if (args.length != 2) {
                     System.out.println("Incorrect operands.");
                     System.exit(0);
@@ -68,11 +67,32 @@ public class Main {
                 } else if (args[2].equals("--") && args.length == 4) {
                     Repository.checkout(args[3], args[1]);
                 } else if (args.length == 2) {
-
+                    Repository.checkoutBranch(args[1]);
                 } else {
                     System.out.println("Invalid operands.");
                     System.exit(0);
                 }
+                break;
+            case "find":
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.find(args[1]);
+                break;
+            case "status":
+                if (args.length != 1) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.status();
+                break;
+            case "branch":
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.branch(args[1]);
                 break;
             default:
                 System.out.println("No command with that name exists.");

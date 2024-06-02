@@ -80,7 +80,10 @@ public class Commit implements Serializable {
     }
 
     public void save() {
+        String branchName = readContentsAsString(Repository.CURR_BRANCH);
+        File branchFile = join(Repository.BRANCHES_DIR, branchName);
         hash = sha1(serialize(this));
+        writeContents(branchFile, hash);
         File commitFile = join(Repository.COMMITS_DIR, hash);
         writeObject(commitFile, this);
         writeContents(Repository.HEAD, hash);
@@ -88,6 +91,14 @@ public class Commit implements Serializable {
 
     public String getParent() {
         return parent;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getHash() {
+        return hash;
     }
 
     public static Commit getCommit(String hash) {

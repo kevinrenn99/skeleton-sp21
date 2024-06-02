@@ -40,6 +40,10 @@ public class Repository {
     /** Current Head*/
     public static final File HEAD = join(GITLET_DIR, "HEAD");
 
+    public static final File BRANCHES_DIR = join(GITLET_DIR, "branches");
+
+    public static final File CURR_BRANCH = join(BRANCHES_DIR, "current");
+
     private static StagingArea staging;
 
 
@@ -59,11 +63,13 @@ public class Repository {
         COMMITS_DIR.mkdir();
         OBJECTS_DIR.mkdir();
         STAGING_DIR.mkdir();
+        BRANCHES_DIR.mkdir();
         try {
             HEAD.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        writeContents(CURR_BRANCH, "master");
         Commit initialCommit = new Commit();
         initialCommit.save();
         staging = new StagingArea();
@@ -143,6 +149,65 @@ public class Repository {
         }
         String targetHash = commitFiles.get(target);
         Blob.copyBlob(targetHash, target);
+    }
+
+    public static void checkoutBranch(String branchName) {
+        File branchFile = join(BRANCHES_DIR, branchName);
+        if (!branchFile.exists()) {
+            System.out.println("No such branch exists.");
+            return;
+        }
+        if (readContentsAsString(CURR_BRANCH).equals(branchName)) {
+            System.out.println("No need to checkout the current branch");
+            return;
+        }
+        Commit branchCommit = readObject(join(COMMITS_DIR, readContentsAsString(branchFile)), Commit.class);
+        for (File file : branchCommit.getFiles().keySet()) {
+            if (!getHead().containsFile(file)) {
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                return;
+            }
+        }
+        writeContents(HEAD, branchCommit.getHash());
+        writeContents(CURR_BRANCH, branchCommit.getHash());
+    }
+
+    public static void find(String message) {
+        Commit current = Repository.getHead();
+        while (true) {
+            if (current.getMessage().equals(message)) {
+                System.out.println(current.getHash());
+            }
+            if (current.getParent() == null) {
+                break;
+            }
+            current = readObject(join(COMMITS_DIR, current.getParent()), Commit.class);
+        }
+    }
+
+    public static void status() {
+        //TODO: complete rest of this method
+        staging = StagingArea.load();
+        System.out.println("=== Branches ===");
+        System.out.println("=== Staged Files ===");
+        for (File file : staging.getAdded().keySet()) {
+            System.out.println(file.getName());
+        }
+        System.out.println("=== Removed Files ===");
+        for (File file : staging.getRemoved()) {
+            System.out.println(file.getName());
+        }
+        System.out.println("=== Modifications Not Stages For Commit ===");
+        System.out.println("=== Untracked Files ===");
+    }
+
+    public static void branch(String branchName) {
+        File branchFile = join(BRANCHES_DIR, branchName);
+        if (branchFile.exists()) {
+            System.out.println("A branch with that name already exists.");
+            return;
+        }
+        writeContents(branchFile, readContentsAsString(HEAD));
     }
 
     public static Commit getHead() {
