@@ -65,8 +65,8 @@ public class Main {
             case "checkout":
                 if (args[1].equals("--") && args.length == 3) {
                     Repository.checkout(args[2]);
-                } else if (args.length == 4) {
-
+                } else if (args[2].equals("--") && args.length == 4) {
+                    Repository.checkout(args[3], args[1]);
                 } else if (args.length == 2) {
 
                 } else {

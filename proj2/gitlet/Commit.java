@@ -4,10 +4,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date; // TODO: You'll likely use this in this class
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static gitlet.Utils.*;
 /** Represents a gitlet commit object.
@@ -92,6 +89,11 @@ public class Commit implements Serializable {
 
     public String getParent() {
         return parent;
+    }
+
+    public static Commit getCommit(String hash) {
+        File commitFile = join(Repository.COMMITS_DIR, hash);
+        return readObject(commitFile, Commit.class);
     }
 
     public String toString() {

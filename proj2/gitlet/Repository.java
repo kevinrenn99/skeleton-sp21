@@ -128,6 +128,23 @@ public class Repository {
         Blob.copyBlob(targetHash, target);
     }
 
+    public static void checkout(String fileName, String commitID) {
+        List<String> files = plainFilenamesIn(COMMITS_DIR);
+        if (!files.contains(join(COMMITS_DIR, commitID))) {
+            System.out.println("No commit with that id exists.");
+            return;
+        }
+        Commit commit = Commit.getCommit(commitID);
+        File target = join(CWD, fileName);
+        Map<File, String> commitFiles = commit.getFiles();
+        if (!commitFiles.keySet().contains(target)) {
+            System.out.println("File does not exist in that commit.");
+            return;
+        }
+        String targetHash = commitFiles.get(target);
+        Blob.copyBlob(targetHash, target);
+    }
+
     public static Commit getHead() {
         String headHash = readContentsAsString(HEAD);
         return readObject(join(COMMITS_DIR, headHash), Commit.class);
