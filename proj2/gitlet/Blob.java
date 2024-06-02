@@ -41,6 +41,14 @@ public class Blob implements Serializable {
         writeContents(saveFile, contents);
     }
 
+    public static void copyBlob(String hash, File destination) {
+        String prefix = hash.substring(0, 2);
+        String suffix = hash.substring(2);
+        File saveDirectory = join(Repository.OBJECTS_DIR, prefix);
+        File saveFile = join(saveDirectory, suffix);
+        writeContents(destination, readContentsAsString(saveFile));
+    }
+
     public String getHash() {
         return this.hash;
     }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static gitlet.Utils.*;
@@ -39,7 +40,7 @@ public class Repository {
     /** Current Head*/
     public static final File HEAD = join(GITLET_DIR, "HEAD");
 
-    private static StagingArea staging = new StagingArea();
+    private static StagingArea staging;
 
 
 
@@ -63,16 +64,15 @@ public class Repository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         Commit initialCommit = new Commit();
-        String hash = sha1(serialize(initialCommit));
-        File initialCommitFile = join(COMMITS_DIR, hash);
-        writeObject(initialCommitFile, initialCommit);
-        writeContents(HEAD, hash);
+        initialCommit.save();
+        staging = new StagingArea();
         staging.createFile();
+        staging.save();
     }
 
     public static void add(String fileName) {
+        staging = StagingArea.load();
         File file = join(CWD, fileName);
         if (!file.exists()) {
             System.out.println("File does not exist.");
@@ -81,21 +81,55 @@ public class Repository {
         Blob blob = new Blob(file);
         blob.saveBlob();
         staging.add(file, blob.getHash());
-        staging.printAdded();
+        staging.save();
     }
 
-    public static void commit() {
-
+    public static void commit(String message) {
+        staging = StagingArea.load();
+        Commit newCommit = new Commit(message);
+        newCommit.addCommit(staging);
+        staging.save();
     }
 
     public static void remove(String fileName) {
+        staging = StagingArea.load();
         File file = join(CWD, fileName);
         staging.remove(file);
+        staging.save();
+    }
+
+    public static void log() {
+        Commit current = Repository.getHead();
+        while (true) {
+            System.out.println(current);
+            if (current.getParent() == null) {
+                break;
+            }
+            current = readObject(join(COMMITS_DIR, current.getParent()), Commit.class);
+        }
+    }
+
+    public static void globalLog() {
+        List<String> files = plainFilenamesIn(COMMITS_DIR);
+        for (String s : files) {
+            System.out.println(readObject(join(COMMITS_DIR, s), Commit.class));
+        }
+    }
+
+    public static void checkout(String fileName) {
+        Commit head = getHead();
+        File target = join(CWD, fileName);
+        Map<File, String> headFiles = head.getFiles();
+        if (!headFiles.keySet().contains(target)) {
+            System.out.println("File does not exist in that commit.");
+            return;
+        }
+        String targetHash = headFiles.get(target);
+        Blob.copyBlob(targetHash, target);
     }
 
     public static Commit getHead() {
         String headHash = readContentsAsString(HEAD);
         return readObject(join(COMMITS_DIR, headHash), Commit.class);
     }
-
 }

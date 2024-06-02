@@ -17,7 +17,6 @@ public class Main {
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
                 if (args.length != 1) {
                     System.out.println("Incorrect operands.");
                     System.exit(0);
@@ -25,7 +24,6 @@ public class Main {
                 Repository.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
                 if (args.length != 2) {
                     System.out.println("Incorrect operands.");
                     System.exit(0);
@@ -33,12 +31,14 @@ public class Main {
                 Repository.add(args[1]);
                 break;
             case "commit":
-                // TODO: handle the `add [filename]` command
-                if (args.length != 1) {
-                    System.out.println("Incorrect operands.");
+                if (args.length < 2) {
+                    System.out.println("Please enter a commit message.");
+                    System.exit(0);
+                } else if (args.length > 2) {
+                    System.out.println("Invalid operands.");
                     System.exit(0);
                 }
-                Repository.commit();
+                Repository.commit(args[1]);
                 break;
             case "rm":
                 // TODO: handle the `add [filename]` command
@@ -47,6 +47,32 @@ public class Main {
                     System.exit(0);
                 }
                 Repository.remove(args[1]);
+                break;
+            case "log":
+                if (args.length != 1) {
+                    System.out.println("Invalid operands.");
+                    System.exit(0);
+                }
+                Repository.log();
+                break;
+            case "global-log":
+                if (args.length != 1) {
+                    System.out.println("Invalid operands.");
+                    System.exit(0);
+                }
+                Repository.globalLog();
+                break;
+            case "checkout":
+                if (args[1].equals("--") && args.length == 3) {
+                    Repository.checkout(args[2]);
+                } else if (args.length == 4) {
+
+                } else if (args.length == 2) {
+
+                } else {
+                    System.out.println("Invalid operands.");
+                    System.exit(0);
+                }
                 break;
             default:
                 System.out.println("No command with that name exists.");

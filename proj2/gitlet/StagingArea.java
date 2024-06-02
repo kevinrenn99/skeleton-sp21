@@ -11,8 +11,8 @@ import java.util.Set;
 import static gitlet.Utils.*;
 
 public class StagingArea implements Serializable {
-    private File directory = Repository.STAGING_DIR;
-    private File stagingFile = join(directory, "stagingObj");
+    private static File directory = Repository.STAGING_DIR;
+    private static File stagingFile = join(directory, "stagingObj");
     private Map<File, String> addedFiles;
     private Set<File> removedFiles;
 
@@ -23,14 +23,15 @@ public class StagingArea implements Serializable {
 
     public void add(File file, String hash) {
         Commit head = Repository.getHead();
-        if (head.containsFile(file)) {
-            if (addedFiles.containsKey(file)) {
+        if (head.containsHash(hash)) {
+            if (addedFiles.values().contains(hash)) {
                 addedFiles.remove(file);
             }
+            System.out.println("same file as previous commit");
             return;
         }
         addedFiles.put(file, hash);
-        this.save();
+        System.out.println("file added successfully");
     }
 
     public void createFile() {
@@ -43,6 +44,10 @@ public class StagingArea implements Serializable {
 
     public void save() {
         writeObject(stagingFile, this);
+    }
+
+    public static StagingArea load() {
+        return readObject(stagingFile, StagingArea.class);
     }
 
     public void remove(File file) {
@@ -59,6 +64,20 @@ public class StagingArea implements Serializable {
         }
     }
 
+    public void clear() {
+        addedFiles.clear();
+        removedFiles.clear();
+    }
+
+    public Map<File, String> getAdded() {
+        return addedFiles;
+    }
+
+    public Set<File> getRemoved() {
+        return removedFiles;
+    }
+
+    // For testing
     public void printAdded() {
         for (File f : addedFiles.keySet()) {
             System.out.println(f.getPath());
