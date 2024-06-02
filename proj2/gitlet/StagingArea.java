@@ -31,7 +31,6 @@ public class StagingArea implements Serializable {
             return;
         }
         addedFiles.put(file, hash);
-        System.out.println("file added successfully");
     }
 
     public void createFile() {

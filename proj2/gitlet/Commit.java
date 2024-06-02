@@ -36,7 +36,6 @@ public class Commit implements Serializable {
 
     private String hash;
 
-    /* TODO: fill in the rest of this class. */
     public Commit() {
         this.message = "initial commit";
         this.timestamp = new Date(0);
@@ -96,10 +95,8 @@ public class Commit implements Serializable {
         return readObject(commitFile, Commit.class);
     }
 
+    @Override
     public String toString() {
-        return ("===\n" +
-                "commit " + hash + "\n" +
-                "Date: " + timestamp + "\n" +
-                message + "\n");
+        return String.format("===\ncommit %s\nDate: %ta %tb %te %tl:%tM:%tS %tY %tz\n%s\n", hash, timestamp, timestamp, timestamp, timestamp, timestamp, timestamp, timestamp, timestamp, message);
     }
 }
