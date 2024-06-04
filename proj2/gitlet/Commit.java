@@ -89,6 +89,27 @@ public class Commit implements Serializable {
         writeContents(Repository.HEAD, hash);
     }
 
+    public static Commit latestCommonAncestor(Commit second, Commit first) {
+        Set<String> firstCommitSet = new HashSet<>();
+        while (true) {
+            firstCommitSet.add(first.hash);
+            if (first.getParent() == null) {
+                break;
+            }
+            first = readObject(join(Repository.COMMITS_DIR, first.getParent()), Commit.class);
+        }
+        while (true) {
+            System.out.println(second.hash);
+            if (firstCommitSet.contains(second.hash)) {
+                return second;
+            }
+            if (second.getParent() == null) {
+                return second;
+            }
+            second = readObject(join(Repository.COMMITS_DIR, second.getParent()), Commit.class);
+        }
+    }
+
     public String getParent() {
         return parent;
     }

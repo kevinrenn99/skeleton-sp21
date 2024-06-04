@@ -23,7 +23,7 @@ public class StagingArea implements Serializable {
 
     public void add(File file, String hash) {
         Commit head = Repository.getHead();
-        if (head.containsHash(hash)) {
+        if (head.containsFile(file) && head.containsHash(hash)) {
             if (addedFiles.values().contains(hash)) {
                 addedFiles.remove(file);
             }
@@ -55,7 +55,7 @@ public class StagingArea implements Serializable {
             return;
         }
         Commit head = Repository.getHead();
-        if (file.exists() && head.containsFile(file)) {
+        if (head.containsFile(file)) {
             removedFiles.add(file);
             file.delete();
         } else {

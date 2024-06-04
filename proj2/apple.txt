@@ -1,0 +1,7 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+i love apples======
+I love bananas
+>>>>>>>======
+I love bananas
+>>>>>>>

@@ -64,7 +64,7 @@ public class Main {
             case "checkout":
                 if (args[1].equals("--") && args.length == 3) {
                     Repository.checkout(args[2]);
-                } else if (args[2].equals("--") && args.length == 4) {
+                } else if (args.length == 4 && args[2].equals("--")) {
                     Repository.checkout(args[3], args[1]);
                 } else if (args.length == 2) {
                     Repository.checkoutBranch(args[1]);
@@ -93,6 +93,27 @@ public class Main {
                     System.exit(0);
                 }
                 Repository.branch(args[1]);
+                break;
+            case "rm-branch":
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.removeBranch(args[1]);
+                break;
+            case "reset":
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.reset(args[1]);
+                break;
+            case "merge":
+                if (args.length != 2) {
+                    System.out.println("Incorrect operands.");
+                    System.exit(0);
+                }
+                Repository.merge(args[1]);
                 break;
             default:
                 System.out.println("No command with that name exists.");
